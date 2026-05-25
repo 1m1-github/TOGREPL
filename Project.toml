@@ -1,0 +1,9 @@
+name = "TOGREPL"
+uuid = "99a1b240-057c-4d61-b879-ade0146bce0c"
+version = "1.0.0"
+authors = ["1m1 <imi@1m1.io>"]
+
+[deps]
+LoopOS = "9a85759a-e2d6-4eb5-ba00-7f48a432d541"
+REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
+ReplMaker = "b873ce64-0db9-51f5-a568-4457d8e49576"
