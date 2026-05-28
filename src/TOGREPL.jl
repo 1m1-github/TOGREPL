@@ -4,32 +4,40 @@ using REPL, ReplMaker
 using LoopOS: listen, Peripheral
 import Base.take!, Base.put!
 
-struct REPLInput <: InputPeripheral
-    c::Channel{String}
+struct repl <: Peripheral
+    r::AbstractREPL
 end
-take!(::REPLInput) = take!(REPL.c)
+take!(::repl) = take!(REPL.c)
+put!(::repl, a) = println(stdout, a)
 state(::REPLInput) = "TOGREPL.REPL"
-const REPLINPUT = REPLInput(Channel{String}(Inf))
+const REPLINSTANCE = Ref{}(repl)
 
-struct REPLOutput <: Peripheral end
-put!(::REPLOutput, a) = println(stdout, a)
+# old code
+# struct REPLInput <: Peripheral
+#     c::Channel{String}
+# end
+# take!(::REPLInput) = take!(REPL.c)
+# const REPLINPUT = REPLInput(Channel{String}(Inf))
+# struct REPLOutput <: Peripheral end
+# put!(::REPLOutput, a) = println(stdout, a)
+# old code
 
 repl_parse(s) = put!(REPL.c, string(strip("""$s""")))
 
 function awaken(GOD)
-    listen(REPLINPUT)
     term = REPL.Terminals.TTYTerminal("tog", stdin, stdout, stderr)
-    repl = LineEditREPL(term, true, true)
+    REPLINSTANCE[] = repl(LineEditREPL(term, true, true))
     ReplMaker.initrepl(
         repl_parse,
-        repl=repl,
+        repl=REPLINSTANCE[].r,
         prompt_text="> ",
         prompt_color=:light_cyan,
         start_key="\\C-G",
         mode_name="GOD",
     )
     GOD && write(stdin.buffer, "\x07")
-    REPL.run_repl(repl)
+    listen(REPLINSTANCE[])
+    REPL.run_repl(REPLINSTANCE[].r)
 end
 
 end
