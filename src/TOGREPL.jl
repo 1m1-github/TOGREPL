@@ -1,7 +1,7 @@
 module TOGREPL
 
 using REPL, ReplMaker
-using LoopOS: listen, InputPeripheral, OutputPeripheral
+using LoopOS: listen, Peripheral
 import Base.take!, Base.put!
 
 struct REPLInput <: InputPeripheral
@@ -11,7 +11,7 @@ take!(::REPLInput) = take!(REPL.c)
 state(::REPLInput) = "TOGREPL.REPL"
 const REPLINPUT = REPLInput(Channel{String}(Inf))
 
-struct REPLOutput <: OutputPeripheral end
+struct REPLOutput <: Peripheral end
 put!(::REPLOutput, a) = println(stdout, a)
 
 repl_parse(s) = put!(REPL.c, string(strip("""$s""")))
