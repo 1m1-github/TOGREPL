@@ -9,7 +9,7 @@ struct repl <: Peripheral
 end
 take!(::repl) = take!(REPL.c)
 put!(::repl, a) = println(stdout, a)
-state(::REPLInput) = "TOGREPL.REPL"
+state(::repl) = "TOGREPL.REPL"
 const REPLINSTANCE = Ref{}(repl)
 
 # old code
