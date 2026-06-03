@@ -1,6 +1,6 @@
 name = "TOGREPL"
 uuid = "99a1b240-057c-4d61-b879-ade0146bce0c"
-version = "5.0.0"
+version = "6.0.0"
 authors = ["1m1 <imi@1m1.io>"]
 
 [deps]
