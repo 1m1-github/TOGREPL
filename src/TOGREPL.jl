@@ -6,19 +6,20 @@ using LoopOS: listen, Peripheral
 import Base.take!, Base.put!
 
 struct repl <: Peripheral
-    # r::AbstractREPL
     c::Channel{String}
 end
 const REPLINSTANCE = repl(Channel{String}(Inf))
-take!(::repl) = begin
+take!(::Type{repl}) = begin
     @show "TOGREPL.take!", REPLINSTANCE.c
-    take!(REPLINSTANCE.c)
+    output = take!(REPLINSTANCE.c)
+    @show "TOGREPL.take!", output
+    output
 end
-put!(::repl, a) = begin
+put!(::Type{repl}, a) = begin
     @show "TOGREPL.put!", a
     println(stdout, a)
 end
-state(::repl) = "TOGREPL.REPL"
+state(::Type{repl}) = "TOGREPL.REPL"
 
 # old code
 # struct REPLInput <: Peripheral
@@ -40,16 +41,16 @@ end
 function awaken()
     # term = REPL.Terminals.TTYTerminal("tog", stdin, stdout, stderr)
     # REPLINSTANCE[] = repl(LineEditREPL(term, true, true))
-    atreplinit(repl -> begin
+    atreplinit(r -> begin
         ReplMaker.initrepl(
             repl_parse,
-            repl=repl,
+            repl=r,
             prompt_text="> ",
             prompt_color=:light_cyan,
             start_key="\\C-G", # "\x07",
             mode_name="GOD",
         )
-        listen(REPLINSTANCE)
+        # listen(REPLINSTANCE)
     end
     )
     # write(stdin.buffer, "\x07")
