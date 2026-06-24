@@ -1,7 +1,7 @@
 module TOGREPL
 
 # using REPL
-using ReplMaker
+using ReplMaker, RemoteREPL
 using LoopOS: listen, Peripheral
 import Base.take!, Base.put!
 
@@ -36,9 +36,9 @@ repl_parse(s) = begin
     put!(REPLINSTANCE.c, string(strip("""$s""")))
 end
 # repl_parse(s) = println(s)
-
+const REMOTE_REPL_TASK = Ref{Task}()
 # function awaken(GOD)
-function awaken()
+function awaken(;remotereplport)
     # term = REPL.Terminals.TTYTerminal("tog", stdin, stdout, stderr)
     # REPLINSTANCE[] = repl(LineEditREPL(term, true, true))
     atreplinit(r -> begin
@@ -51,6 +51,8 @@ function awaken()
             mode_name="GOD",
         )
         # listen(REPLINSTANCE)
+        REMOTE_REPL_TASK[] = @async serve_repl(remotereplport)
+        # @show "serve_repl", replport
     end
     )
     # write(stdin.buffer, "\x07")
